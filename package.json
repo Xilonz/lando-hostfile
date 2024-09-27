@@ -1,0 +1,29 @@
+{
+    "name": "@xilonz/lando-hostfile-plugin",
+    "license": "UNLICENSED",
+    "version": "1.1.0",
+    "main": "index.js",
+    "directories": {
+      "lib": "./lib"
+    },
+    "nyc": {
+      "include": [
+        "lib/**/*.js"
+      ],
+      "exclude": [
+        "test/**"
+      ],
+      "cache": true,
+      "all": true
+    },
+    "scripts": {
+      "fix": "eslint --quiet --no-ignore lib test --fix",
+      "lint": "eslint --quiet --no-ignore lib test",
+      "test:unit": "nyc --reporter=html --reporter=text mocha --timeout 5000 test/**/*.spec.js",
+      "test": "yarn lint && yarn test:unit"
+    },
+    "dependencies": {
+      "lodash": "^4.17.20"
+    }
+  }
+  
