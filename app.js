@@ -34,7 +34,7 @@ module.exports = (app, lando) => {
         // Lets add or replace the old entries
         const newHostsFile = hasLandoManaged ? hostsFile.replace(
             new RegExp(`#lando-managed-${app.name}[\s\S]*#end-lando-managed-${app.name}`, 'g'),
-            `#lando-managed\n${hosts}\n#end-lando-managed`
+            `#lando-managed-${app.name}\n${hosts}\n#end-lando-managed-${app.name}`
         ) : `${hostsFile}\n#lando-managed-${app.name}\n${hosts}\n#end-lando-managed-${app.name}`;
 
         // Write the new hosts file
@@ -56,7 +56,7 @@ module.exports = (app, lando) => {
             const hasLandoManagedWin = hostsFileWin.includes(`#lando-managed-${app.name}`);
             const newWinHostsFile = hasLandoManagedWin ? hostsFileWin.replace(
                 new RegExp(`#lando-managed-${app.name}[\s\S]*#end-lando-managed-${app.name}`, 'g'),
-                `#lando-managed\n${hosts}\n#end-lando-managed`
+                `#lando-managed-${app.name}\n${hosts}\n#end-lando-managed-${app.name}`
             ) : `${hostsFileWin}\n#lando-managed-${app.name}\n${hosts}\n#end-lando-managed-${app.name}`;
 
 
