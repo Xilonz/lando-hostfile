@@ -1,0 +1,20 @@
+{
+  "name": "@xilonz/lando-hostfile",
+  "version": "0.0.1",
+  "main": "index.js",
+  "lando": {},
+  "keywords": [
+    "lando-plugin",
+    "host",
+    "hostfile",
+    "loopback"
+  ],
+  "description": "The lando hostfile is for those who face loopback restrictions by their ISP or otherwise. This plugin will add lando sites to your hostfile entries as soon at you lando start.",
+  "dependencies": {
+    "lodash": "^4.17.20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Xilonz/lando-hostfile"
+  }
+}
