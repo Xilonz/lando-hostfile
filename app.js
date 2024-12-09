@@ -2,7 +2,17 @@
 
 const fs = require('fs');
 const _ = require('lodash');
+const { emit } = require('process');
 const spawnSync = require("child_process").spawnSync;
+const execSync = require("child_process").execSync;
+
+const process = require('process');
+
+const OSC = "\u001B]";
+const SEP = ";";
+const BEL = "\u0007";
+const terminallink = (text, url) =>
+  [OSC, "8", SEP, SEP, url, BEL, text, OSC, "8", SEP, SEP, BEL].join("");
 
 function transformHostFile( contents, urls, identifier ){
   const startMarker = `#lando-managed-${ identifier }`
@@ -45,6 +55,7 @@ function getHostFiles(){
         'contents': nixProcess.stdout.toString(),
         'platform': process.platform
       } )
+      break;
     case 'win32':
       const winDir = getHostFilePath( process.platform );
       hostFiles.push( {
@@ -52,6 +63,7 @@ function getHostFiles(){
         'contents': fs.readFileSync( winDir, 'utf8'),
         'platform': process.platform
       } )
+      break;
   }
 
   // Check for the WSL_DISTRO_NAME env variable to determine if we are running within WSL
@@ -76,13 +88,21 @@ function writeHostFile( path, contents, platform = process.platform ){
   switch ( platform ) {
     case 'darwin':
     case 'linux': 
-      spawnSync('sudo', ['sh', '-c', String.raw`echo "${contents}" > ${path}`], {shell: true})
-      return;
+      execSync(`echo '${contents}' | sudo tee ${path}`, { 
+        shell: true,
+        stdio: [
+          'inherit',
+          'inherit',
+          'inherit' 
+        ],
+        encoding: 'utf-8'
+      });
+      break;
 
     case 'win32':
     case 'wsl':
       if( !has_sudo() ) {
-        console.warn('No sudo found, unable to update hosts file. Please install https://github.com/gerardog/gsudo');
+        console.warn('Sudo.exe not found, unable to update hosts file. Please enable sudo in the ' + terminallink('Developer Settings page', 'ms-settings:developers') +' in the Settings app' );
         return;
       }
 
@@ -95,14 +115,23 @@ function writeHostFile( path, contents, platform = process.platform ){
       // Write the contents to a temporary file
       fs.writeFileSync( String.raw`${winWslTmpDir}/lando_hosts.tmp` , contents );
 
-      spawnSync('sudo.exe',  ['-d', String.raw`"type ${winTmpDir}\lando_hosts.tmp > ${path}"` ], {shell: true})
-      return;
+      spawnSync('sudo.exe',  [ 'cmd.exe', '/c',  String.raw`"type ${winTmpDir}\lando_hosts.tmp > ${path}"` ], {shell: true})
+      break;
   }
 }
 
 function has_sudo(){
-  const sudoProcess = spawnSync('sudo.exe', ['--version'], { shell: true });
-  return sudoProcess.stderr.length === 0
+  // This will display a message as well?
+  try {
+    execSync( 'sudo.exe config', {
+      stdio: [ 'ignore', 'ignore', 'ignore']
+    });
+  } catch ( e ) {
+    // If exit code != 0, sudo.exe is disabled
+    return false;
+  }
+
+  return true;
 }
 
 module.exports = (app, lando) => {
@@ -122,6 +151,7 @@ module.exports = (app, lando) => {
     }
 
     const hostsFiles = getHostFiles()
+
     // loop through all host files and update them
     hostsFiles.forEach(( {
       'path': hostFile,
@@ -130,7 +160,6 @@ module.exports = (app, lando) => {
     } ) => {
       const newHostsFileContents = transformHostFile( hostFileContents, urls, app.project )
 
-      // Check if the host file is the same as the new one
       if ( hostFileContents !== newHostsFileContents ) {
         writeHostFile( hostFile, newHostsFileContents, platform )
       }
