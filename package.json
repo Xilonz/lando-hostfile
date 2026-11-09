@@ -1,15 +1,19 @@
 {
   "name": "@xilonz/lando-hostfile",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "main": "index.js",
   "lando": {},
   "keywords": [
     "lando-plugin",
     "host",
     "hostfile",
-    "loopback"
+    "loopback",
+    "wsl"
   ],
-  "description": "The lando hostfile is for those who face loopback restrictions by their ISP or otherwise. This plugin will add lando sites to your hostfile entries as soon at you lando start.",
+  "description": "Lando plugin that manages local hosts file entries on lando start and destroy. Cross-platform support for Linux, macOS, Windows, and WSL2.",
+  "scripts": {
+    "test": "node --test"
+  },
   "dependencies": {
     "lodash": "^4.17.20"
   },
