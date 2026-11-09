@@ -78,6 +78,16 @@ Writing to `/etc/hosts` (or `/private/etc/hosts` on macOS) requires `sudo`.
 
 ## Installation
 
+### Via Lando CLI (Recommended)
+
+Install directly from npm via Lando's plugin manager:
+
+```bash
+lando plugin-add @xilonz/lando-hostfile
+```
+
+### Manual / Git Installation
+
 Clone the repository directly into your Lando plugins directory:
 
 ```bash
@@ -90,6 +100,8 @@ Or if you have the repo cloned locally in a projects directory, create a symlink
 ```bash
 ln -s ~/projects/lando-hostfile ~/.lando/plugins/lando-hostfile
 ```
+
+### Verification
 
 Verify that Lando recognizes the plugin:
 
